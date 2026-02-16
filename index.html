@@ -2,448 +2,440 @@
 <html lang="km">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ONE VOICE - Film & Production Master Presentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ONE VOICE: Master Presentation Deck</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
         :root {
+            --bg-color: #050505;
             --indigo-deep: #0a0e1a;
-            --indigo-accent: #161e31;
-            --gold: #F4B622;
-            --gold-muted: #b3861a;
+            --primary: #F4B622;   
             --text-main: #ffffff;
-            --text-muted: #a0aec0;
-            --stone-texture: rgba(255, 255, 255, 0.03);
+            --text-muted: #94a3b8;
+            --border: rgba(255,255,255,0.08);
+            --card-glass: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.05);
+            --spotlight-opacity: 0.6;
             --ease-cinematic: cubic-bezier(0.19, 1, 0.22, 1);
+            --ease-enter: cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Kantumruy Pro', 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--indigo-deep);
+            background-color: var(--bg-color);
             color: var(--text-main);
             overflow: hidden;
             height: 100vh;
             width: 100vw;
-        }
-
-        /* Ambient Background */
-        .bg-overlay {
+            user-select: none;
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: 
-                radial-gradient(circle at 50% -20%, rgba(244, 182, 34, 0.08), transparent 70%),
-                radial-gradient(circle at 0% 100%, rgba(22, 30, 49, 1), transparent 50%);
-            z-index: -1;
         }
 
-        .stone-pattern {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0.05;
-            background-image: url('https://www.transparenttextures.com/patterns/dark-matter.png');
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        /* Navigation UI */
-        .nav-interface {
-            position: fixed;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            align-items: center;
-            gap: 30px;
-            z-index: 1000;
-            background: rgba(10, 14, 26, 0.8);
-            padding: 10px 30px;
-            border-radius: 50px;
-            border: 1px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        .nav-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .nav-btn:hover { color: var(--gold); transform: scale(1.2); }
-
-        .progress-dots { display: flex; gap: 8px; }
-        .dot { 
-            width: 6px; height: 6px; border-radius: 50%; 
-            background: rgba(255,255,255,0.2); transition: 0.4s; 
-        }
-        .dot.active { background: var(--gold); width: 20px; border-radius: 10px; }
-
-        /* Slide Core */
-        .presentation { width: 100%; height: 100%; position: relative; }
-
-        .slide {
+        /* Background Decor */
+        .background-layer {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; flex-direction: column;
-            justify-content: center;
-            padding: 60px 10%;
+            background-image: radial-gradient(circle at 50% 50%, var(--indigo-deep), #000);
+            z-index: -2;
+        }
+
+        .stone-texture {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0.04;
+            background-image: url('https://www.transparenttextures.com/patterns/dark-matter.png');
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .spotlight {
+            position: absolute;
+            width: 1200px; height: 1200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(244, 182, 34, 0.08), transparent 70%);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            filter: blur(100px);
+            pointer-events: none;
+            z-index: 0;
+            opacity: var(--spotlight-opacity);
+        }
+
+        #presentation-container { width: 100%; height: 100%; position: relative; z-index: 1; }
+
+        /* Slide Transitions */
+        .slide {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            padding: 5% 8%;
+            display: flex; flex-direction: column; justify-content: center;
             opacity: 0;
             pointer-events: none;
-            transform: translateY(20px);
-            transition: all 0.8s var(--ease-cinematic);
+            transform: scale(1.02) translateY(10px);
+            transition: opacity 0.8s var(--ease-cinematic), transform 1s var(--ease-cinematic);
         }
 
-        .slide.active {
-            opacity: 1;
-            pointer-events: auto;
-            transform: translateY(0);
-        }
+        .slide.active { opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); z-index: 10; }
 
         /* Typography */
-        .khmer { font-family: 'Kantumruy Pro', sans-serif; }
-        .english { font-family: 'Plus Jakarta Sans', sans-serif; text-transform: uppercase; letter-spacing: 2px; font-weight: 300; font-size: 0.85rem; color: var(--gold); }
+        h1 { font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 700; line-height: 1.1; margin-bottom: 20px; color: var(--text-main); }
+        h2 { font-size: clamp(1.8rem, 3vw, 2.5rem); font-weight: 600; margin-bottom: 25px; color: var(--primary); }
+        h3 { font-size: 1.2rem; font-weight: 600; color: #fff; margin-bottom: 8px; }
+        p { font-size: 1.1rem; line-height: 1.6; color: var(--text-muted); font-weight: 300; }
+        .subhead { text-transform: uppercase; letter-spacing: 4px; font-size: 0.75rem; color: var(--primary); font-weight: 700; margin-bottom: 15px; display: block; }
+        .english-txt { font-family: 'Plus Jakarta Sans'; font-size: 0.85rem; letter-spacing: 1px; color: var(--text-muted); opacity: 0.8; }
 
-        h1 { font-size: clamp(2.5rem, 5vw, 4.5rem); line-height: 1.2; margin-bottom: 10px; font-weight: 700; }
-        .subtitle { font-size: 1.5rem; color: var(--gold); margin-bottom: 30px; }
+        /* Layout Grids */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; }
         
-        .content-box {
-            background: rgba(255, 255, 255, 0.03);
-            border-left: 3px solid var(--gold);
-            padding: 30px;
-            margin-top: 20px;
-            backdrop-filter: blur(5px);
-        }
+        /* Components */
+        .card { background: var(--card-glass); border: 1px solid var(--card-border); border-radius: 16px; padding: 25px; transition: 0.4s; position: relative; overflow: hidden; }
+        .card:hover { border-color: var(--primary); transform: translateY(-5px); background: rgba(244, 182, 34, 0.02); }
+        .card-price { font-family: 'Plus Jakarta Sans'; font-size: 1.8rem; font-weight: 800; color: var(--primary); display: block; margin: 10px 0; }
+        .card-list { list-style: none; margin-top: 10px; }
+        .card-list li { font-size: 0.85rem; margin-bottom: 6px; display: flex; align-items: center; gap: 10px; color: var(--text-muted); }
+        .card-list li::before { content: "•"; color: var(--primary); font-weight: bold; }
+        
+        .total-card { background: var(--primary); color: #000; text-align: center; justify-content: center; display: flex; flex-direction: column; }
+        .total-card h3, .total-card .card-price { color: #000; }
+        .total-card .card-price { font-size: 2.8rem; }
 
-        .grid { display: grid; gap: 30px; }
-        .grid-2 { grid-template-columns: 1fr 1fr; }
-        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        /* Chart */
+        .chart-row { margin-bottom: 30px; }
+        .bar-label { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; }
+        .bar-bg { width: 100%; height: 40px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; }
+        .bar-fill { height: 100%; background: var(--primary); width: 0; transition: width 1.5s var(--ease-cinematic); position: relative; }
+        .bar-fill.volunteer { background: #4b5563; }
+        .bar-val { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-weight: 800; font-family: 'Plus Jakarta Sans'; font-size: 0.9rem; }
 
-        /* Custom Elements */
-        .stat-card {
-            background: var(--indigo-accent);
-            padding: 25px;
-            border-radius: 15px;
-            border-bottom: 2px solid transparent;
-            transition: 0.3s;
-        }
-        .stat-card:hover { border-color: var(--gold); background: rgba(244, 182, 34, 0.05); }
+        /* Navigation */
+        .click-area { position: absolute; top: 0; height: 100%; width: 50%; z-index: 5000; cursor: pointer; }
+        #next-zone { right: 0; }
+        #prev-zone { left: 0; }
 
-        .budget-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        .budget-table td { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .budget-table .label { color: var(--text-muted); }
-        .budget-table .value { text-align: right; font-weight: 700; color: var(--gold); }
+        .nav-ui { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 20px; z-index: 10000; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: 0.3s; cursor: pointer; }
+        .dot.active { width: 24px; border-radius: 10px; background: var(--primary); }
 
-        .timeline {
-            display: flex;
-            justify-content: space-between;
-            position: relative;
-            margin-top: 50px;
-        }
-        .timeline::before {
-            content: ''; position: absolute; top: 15px; left: 0; width: 100%; height: 1px;
-            background: rgba(255,255,255,0.1); z-index: 0;
-        }
-        .timeline-item { position: relative; z-index: 1; text-align: center; width: 15%; }
-        .timeline-dot { 
-            width: 30px; height: 30px; background: var(--indigo-deep); 
-            border: 2px solid var(--gold); border-radius: 50%; margin: 0 auto 15px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.7rem;
-        }
+        .progress-line { position: fixed; top: 0; left: 0; height: 3px; background: var(--primary); transition: width 0.3s; z-index: 10001; }
 
-        /* Cover Slide Special */
-        .cover-content { text-align: center; }
-        .temple-silhouette {
-            height: 200px;
-            margin-bottom: 40px;
-            opacity: 0.3;
-            background: url('https://www.transparenttextures.com/patterns/black-paper.png'); /* Mock silhouette space */
-            mask-image: linear-gradient(to top, black, transparent);
-        }
-
-        /* Animations */
-        .slide.active .animate-up { animation: slideUp 1s var(--ease-cinematic) forwards; }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        /* Image Masking */
+        .temple-img { width: 100%; border-radius: 20px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
 
         @media (max-width: 900px) {
             .grid-2, .grid-3 { grid-template-columns: 1fr; }
-            .slide { padding: 40px 5%; }
-            .nav-interface { width: 90%; justify-content: space-between; bottom: 20px; }
+            .slide { padding: 40px 20px; overflow-y: auto; }
+            h1 { font-size: 2.2rem; }
         }
     </style>
 </head>
 <body>
 
-    <div class="bg-overlay"></div>
-    <div class="stone-pattern"></div>
+<div class="background-layer"></div>
+<div class="stone-texture"></div>
+<div class="spotlight" id="spotlight"></div>
+<div class="progress-line" id="progress-line"></div>
 
-    <div class="nav-interface">
-        <button class="nav-btn" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i></button>
-        <div class="progress-dots" id="progress-dots"></div>
-        <button class="nav-btn" onclick="nextSlide()"><i class="fa-solid fa-chevron-right"></i></button>
+<div class="nav-ui" id="nav-ui"></div>
+
+<div class="click-area" id="prev-zone"></div>
+<div class="click-area" id="next-zone"></div>
+
+<div id="presentation-container">
+
+    <!-- 01: Title -->
+    <div class="slide">
+        <div style="text-align: center;">
+            <img src="https://sophatchy.com/wp-content/uploads/2026/02/Logo-Onevoice-update-02.png" style="height: 120px; margin-bottom: 30px;" alt="Logo">
+            <span class="subhead">PHASE I – FILM & PRODUCTION MASTER PRESENTATION</span>
+            <h1>ONE VOICE – សំឡេងខ្មែរតែមួយ</h1>
+            <p style="font-size: 1.8rem; color: var(--primary); margin-bottom: 10px;">ការពារទឹកដីសក្ការៈ រៈឡើងក្នុងសំឡេងតែមួយ</p>
+            <p class="english-txt">Art as the Voice of Peace and National Dignity</p>
+        </div>
     </div>
 
-    <main class="presentation" id="presentation">
-        
-        <!-- SLIDE 1: COVER -->
-        <section class="slide active">
-            <div class="cover-content animate-up">
-                <div style="margin-bottom: 20px;">
-                    <img src="https://sophatchy.com/wp-content/uploads/2026/02/Logo-Onevoice-update-02.png" alt="One Voice Logo" style="height: 120px;">
-                </div>
-                <p class="english">Season I – Film & Production Master Presentation</p>
-                <h1 class="khmer">ONE VOICE – សំឡេងខ្មែរតែមួយ</h1>
-                <p class="subtitle khmer">ការពារទឹកដីសក្ការៈ រៈឡើងក្នុងសំឡេងតែមួយ</p>
-                <div style="margin-top: 40px; opacity: 0.6;">
-                    <p class="khmer">សិល្បៈ សន្តិភាព និងសេចក្តីថ្លៃថ្នូររបស់កម្ពុជា</p>
-                    <p class="english">Art as the Voice of Peace and National Dignity</p>
+    <!-- 02: Why One Voice -->
+    <div class="slide">
+        <span class="subhead">THE CONTEXT</span>
+        <h2>ហេតុអ្វីបានជាមាន ONE VOICE?</h2>
+        <div class="grid-3">
+            <div class="card">
+                <i class="fa-solid fa-person-walking-arrow-right" style="font-size: 2rem; color: var(--primary); margin-bottom: 15px;"></i>
+                <h3>ទុក្ខវេទនា</h3>
+                <p>Civilians Displaced. ប្រជាជនស្លូតត្រង់ត្រូវរត់ភៀសខ្លួន និងគ្រួសារត្រូវបានបំបែកចេញពីគ្នា។</p>
+            </div>
+            <div class="card">
+                <i class="fa-solid fa-gopuram" style="font-size: 2rem; color: var(--primary); margin-bottom: 15px;"></i>
+                <h3>ការបំផ្លិចបំផ្លាញ</h3>
+                <p>Temples Damaged. ប្រាសាទ និងកេរ្តិ៍ដំណែលត្រូវបានបំផ្លាញដោយសារជម្លោះ។</p>
+            </div>
+            <div class="card">
+                <i class="fa-solid fa-palette" style="font-size: 2rem; color: var(--primary); margin-bottom: 15px;"></i>
+                <h3>ការឆ្លើយតប</h3>
+                <p>Response through Art. យើងមិនឆ្លើយតបដោយអំពើហិង្សា ប៉ុន្តែយើងឆ្លើយតបដោយសិល្បៈ។</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 03: Vision & Mission -->
+    <div class="slide">
+        <div class="grid-2">
+            <div>
+                <span class="subhead">STRATEGIC PILLARS</span>
+                <h2>ចក្ខុវិស័យ និងបេសកកម្ម</h2>
+                <div class="card" style="margin-bottom: 20px;">
+                    <h3>ចក្ខុវិស័យ (Vision)</h3>
+                    <p>សិល្បៈគឺជាភាសាសកល និងជាកម្លាំងសីលធម៌។ យើងជឿថាទឹកដីសក្ការៈរបស់កម្ពុជា គឺជាទឹកដីសន្តិភាព មិនមែនសង្គ្រាម។</p>
                 </div>
             </div>
-        </section>
+            <div class="card" style="border-left: 4px solid var(--primary);">
+                <h3>បេសកកម្ម (Mission)</h3>
+                <ul class="card-list" style="gap: 15px; display: grid;">
+                    <li>ផ្សព្វផ្សាយប្រវត្តិសាស្ត្រពិត</li>
+                    <li>លើកស្ទួយវប្បធម៌ខ្មែរ</li>
+                    <li>បង្កើតសំឡេងជាតិដ៏រួបរួម</li>
+                    <li>ផ្សព្វផ្សាយសន្តិភាពលើឆាកអន្តរជាតិ</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
-        <!-- SLIDE 2: HISTORY -->
-        <section class="slide">
-            <p class="english">01. Historical Background</p>
-            <h2 class="khmer" style="font-size: 2.5rem;">ប្រវត្តិនៃការចាប់ផ្ដើម</h2>
-            <div class="grid grid-2 animate-up">
-                <div class="content-box">
-                    <p class="khmer">ONE VOICE ចាប់ផ្ដើមពីចក្ខុវិស័យសិល្បៈ <strong>“Garuda (Krud)”</strong> ឆ្នាំ 1997។</p>
-                    <p class="khmer" style="margin-top: 15px;">ឆ្នាំ 2025 បានផលិតភាពយន្តខ្លី “Defending Our Sacred Land” ក្នុងបរិបទភាពតានតឹងនយោបាយ និងការគំរាមកំហែងសង្គ្រាម។</p>
-                </div>
-                <div class="content-box" style="border-color: rgba(255,255,255,0.2);">
-                    <p class="english" style="color: var(--text-muted); text-transform: none; font-size: 1rem;">
-                        From an artistic vision, it evolved into a national cultural movement uniting artists, filmmakers, and religious communities.
-                    </p>
+    <!-- 04: Budget Overview -->
+    <div class="slide">
+        <span class="subhead">FINANCIAL STRATEGY</span>
+        <h2>យុទ្ធសាស្ត្រថវិកា | Budget Overview</h2>
+        <div class="chart-container" style="max-width: 800px; margin: 40px auto 0; width: 100%;">
+            <div class="chart-row">
+                <div class="bar-label"><span>Option 1: Volunteer Package</span><span class="english-txt">$18,100</span></div>
+                <div class="bar-bg"><div class="bar-fill volunteer" style="width: 31.7%"><span class="bar-val">$18,100</span></div></div>
+            </div>
+            <div class="chart-row">
+                <div class="bar-label"><span>Option 2: Actual Production Package</span><span class="english-txt">$57,050</span></div>
+                <div class="bar-bg"><div class="bar-fill" style="width: 100%"><span class="bar-val" style="color:#000;">$57,050</span></div></div>
+            </div>
+        </div>
+        <p style="text-align: center; font-style: italic; margin-top: 30px;">ជម្រើសទី ២ ធានានូវគុណភាពភាពយន្តកម្រិតខ្ពស់ និងការផ្សព្វផ្សាយជាសកល។</p>
+    </div>
+
+    <!-- 05: Option 1 Breakdown -->
+    <div class="slide">
+        <span class="subhead">INVESTMENT LEVEL 01</span>
+        <h2>ជម្រើសទី ១: Volunteer Package</h2>
+        <div class="grid-3">
+            <div class="card">
+                <h3>Production & Post</h3>
+                <span class="card-price">$6,800</span>
+                <ul class="card-list">
+                    <li>Basic Operations</li>
+                    <li>Volunteer Crew</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Equipment</h3>
+                <span class="card-price">$3,000</span>
+                <ul class="card-list">
+                    <li>1 Set Basic Gear</li>
+                    <li>Standard Lenses</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Digital Outreach</h3>
+                <span class="card-price">$3,000</span>
+                <ul class="card-list">
+                    <li>Social Media Posts</li>
+                    <li>Local Distribution</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Logistics</h3>
+                <span class="card-price">$4,950</span>
+                <ul class="card-list">
+                    <li>Travel & Food</li>
+                    <li>Basic Accomodation</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Admin & Safety</h3>
+                <span class="card-price">$350</span>
+                <ul class="card-list">
+                    <li>Permissions</li>
+                    <li>First Aid Kit</li>
+                </ul>
+            </div>
+            <div class="card total-card">
+                <h3>GRAND TOTAL</h3>
+                <span class="card-price">$18,100</span>
+                <p style="color: #000; font-weight: 600;">Volunteer Base</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 06: Option 2 Breakdown -->
+    <div class="slide">
+        <span class="subhead">INVESTMENT LEVEL 02</span>
+        <h2>ជម្រើសទី ២: Actual Production Package</h2>
+        <div class="grid-3">
+            <div class="card">
+                <h3>Production Crew</h3>
+                <span class="card-price">$26,000</span>
+                <ul class="card-list">
+                    <li>Cinematographers & DP</li>
+                    <li>30 Classical Masters</li>
+                    <li>Pro Lighting Crew</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Digital Outreach</h3>
+                <span class="card-price">$12,000</span>
+                <ul class="card-list">
+                    <li>15 Content Creators</li>
+                    <li>National PR Campaign</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Sacred Logistics</h3>
+                <span class="card-price">$9,050</span>
+                <ul class="card-list">
+                    <li>Temple Permissions</li>
+                    <li>Heritage Site Security</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Post Production</h3>
+                <span class="card-price">$5,000</span>
+                <ul class="card-list">
+                    <li>Color Grading & VFX</li>
+                    <li>Sound Engineering</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Specialized Gear</h3>
+                <span class="card-price">$5,000</span>
+                <ul class="card-list">
+                    <li>4K Aerial Systems</li>
+                    <li>High-Speed Lenses</li>
+                </ul>
+            </div>
+            <div class="card total-card">
+                <h3>GRAND TOTAL</h3>
+                <span class="card-price">$57,050</span>
+                <p style="color: #000; font-weight: 600;">Actual Package</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 07: Sacred Locations -->
+    <div class="slide">
+        <div class="grid-2">
+            <div>
+                <span class="subhead">HERITAGE SITES</span>
+                <h2>ទីតាំងថតដ៏សក្ការៈ</h2>
+                <p style="margin-bottom: 20px;">ទីតាំងទាំងនេះជានិមិត្តសញ្ញានៃអធិបតេយ្យភាព និងព្រលឹងជាតិខ្មែរ។</p>
+                <div class="card">
+                    <p>• <strong> Koh Ker Temple</strong> (ព្រះវិហារ)</p>
+                    <p>• <strong> Chom Temple</strong> (សៀមរាប)</p>
                 </div>
             </div>
-        </section>
+            <img src="http://googleusercontent.com/image_collection/image_retrieval/14426552145097832804" class="temple-img" alt="Koh Ker">
+        </div>
+    </div>
 
-        <!-- SLIDE 3: WHY ONE VOICE -->
-        <section class="slide">
-            <p class="english">02. Purpose & Context</p>
-            <h2 class="khmer" style="font-size: 2.5rem;">ហេតុអ្វីបានជាមាន ONE VOICE?</h2>
-            <div class="grid grid-3 animate-up" style="margin-top: 30px;">
-                <div class="stat-card">
-                    <i class="fa-solid fa-person-walking-arrow-right" style="color: var(--gold); font-size: 2rem; margin-bottom: 15px;"></i>
-                    <h3 class="khmer">ទុក្ខវេទនា</h3>
-                    <p class="khmer" style="font-size: 0.9rem; opacity: 0.7;">ប្រជាជនស្លូតត្រង់ត្រូវរត់ភៀសខ្លួន និងគ្រួសារត្រូវបានបំបែកពីគ្នា។</p>
-                </div>
-                <div class="stat-card">
-                    <i class="fa-solid fa-gopuram" style="color: var(--gold); font-size: 2rem; margin-bottom: 15px;"></i>
-                    <h3 class="khmer">បេតិកភណ្ឌ</h3>
-                    <p class="khmer" style="font-size: 0.9rem; opacity: 0.7;">ប្រាសាទ និងកេរ្តិ៍ដំណែលត្រូវបានបំផ្លាញដោយសារជម្លោះ។</p>
-                </div>
-                <div class="stat-card">
-                    <i class="fa-solid fa-palette" style="color: var(--gold); font-size: 2rem; margin-bottom: 15px;"></i>
-                    <h3 class="khmer">ការឆ្លើយតប</h3>
-                    <p class="khmer" style="font-size: 0.9rem; opacity: 0.7;">យើងមិនឆ្លើយតបដោយអំពើហិង្សា ប៉ុន្តែយើងឆ្លើយតបដោយសិល្បៈ។</p>
-                </div>
+    <!-- 08: Impact -->
+    <div class="slide">
+        <span class="subhead">STRATEGIC OUTCOME</span>
+        <h2>ផលប៉ះពាល់ជាយុទ្ធសាស្ត្រ</h2>
+        <div class="grid-3">
+            <div class="card" style="text-align: center;">
+                <h1 style="color: var(--primary); margin: 0;">100%</h1>
+                <p>National Unity</p>
+                <p style="font-size: 0.9rem;">បង្កើតចលនាវប្បធម៌ជាតិ</p>
             </div>
-        </section>
-
-        <!-- SLIDE 4: VISION & MISSION -->
-        <section class="slide">
-            <div class="grid grid-2 animate-up">
-                <div>
-                    <p class="english">Vision</p>
-                    <h2 class="khmer">ចក្ខុវិស័យ</h2>
-                    <p class="khmer" style="font-size: 1.2rem; line-height: 1.8;">
-                        សិល្បៈគឺជាភាសាសកល និងជាកម្លាំងសីលធម៌។ យើងជឿថាទឹកដីសក្ការៈរបស់កម្ពុជា គឺជាទឹកដីសន្តិភាព មិនមែនសង្គ្រាម។
-                    </p>
-                </div>
-                <div class="content-box">
-                    <p class="english">Mission</p>
-                    <ul class="khmer" style="list-style: none; line-height: 2;">
-                        <li><i class="fa-solid fa-check" style="color: var(--gold); margin-right: 10px;"></i> ផ្សព្វផ្សាយប្រវត្តិសាស្ត្រពិត</li>
-                        <li><i class="fa-solid fa-check" style="color: var(--gold); margin-right: 10px;"></i> លើកស្ទួយវប្បធម៌ខ្មែរ</li>
-                        <li><i class="fa-solid fa-check" style="color: var(--gold); margin-right: 10px;"></i> បង្កើតសំឡេងជាតិដ៏រួបរួម</li>
-                        <li><i class="fa-solid fa-check" style="color: var(--gold); margin-right: 10px;"></i> ផ្សព្វផ្សាយសន្តិភាពលើឆាកអន្តរជាតិ</li>
-                    </ul>
-                </div>
+            <div class="card" style="text-align: center;">
+                <i class="fa-solid fa-dove" style="font-size: 3rem; color: var(--primary); margin-bottom: 15px;"></i>
+                <p>Peace Advocacy</p>
+                <p style="font-size: 0.9rem;">ផ្សព្វផ្សាយសន្តិភាព</p>
             </div>
-        </section>
-
-        <!-- SLIDE 5: PRODUCTION CONCEPT -->
-        <section class="slide">
-            <p class="english">03. Phase I Concept</p>
-            <h2 class="khmer">ការផលិតភាពយន្តរបាំសម័យថ្មី</h2>
-            <div class="grid grid-2 animate-up" style="margin-top: 30px;">
-                <div class="stat-card">
-                    <h4 class="english">Key Features</h4>
-                    <div class="khmer" style="margin-top: 15px;">
-                        <p>• រយៈពេល ២០ នាទី</p>
-                        <p>• ស្ដារពិធីសន្តិភាពដែលបាត់បង់ ២០០ ឆ្នាំ</p>
-                        <p>• ចូលរួមដោយ ៣០ សិល្បករបុរាណ</p>
-                        <p>• រួមមាន ព្រះសង្ឃ និងព្រះបូជាហិណ្ឌូ</p>
-                    </div>
-                </div>
-                <div style="background: url('https://sophatchy.com/wp-content/uploads/2026/02/Logo-Onevoice-update-03.png') no-repeat center; background-size: contain; opacity: 0.2;"></div>
+            <div class="card" style="text-align: center;">
+                <i class="fa-solid fa-shield-heart" style="font-size: 3rem; color: var(--primary); margin-bottom: 15px;"></i>
+                <p>Protecting Dignity</p>
+                <p style="font-size: 0.9rem;">ការពារសេចក្តីថ្លៃថ្នូរជាតិ</p>
             </div>
-        </section>
+        </div>
+    </div>
 
-        <!-- SLIDE 6: LOCATIONS -->
-        <section class="slide">
-            <p class="english">Locations</p>
-            <h2 class="khmer">ទីតាំងថតដ៏សក្ការៈ</h2>
-            <div class="grid grid-2 animate-up" style="margin-top: 30px;">
-                <div class="content-box" style="border-color: var(--gold);">
-                    <h3 class="khmer">ខេត្តព្រះវិហារ</h3>
-                    <p class="khmer">ប្រាសាទកោះកេរ (Koh Ker Temple)</p>
-                </div>
-                <div class="content-box" style="border-color: var(--gold);">
-                    <h3 class="khmer">ខេត្តសៀមរាប</h3>
-                    <p class="khmer">ប្រាសាទចោម (Chom Temple)</p>
-                </div>
+    <!-- 09: Closing -->
+    <div class="slide">
+        <div style="text-align: center;">
+            <span class="subhead">THE PROMISE</span>
+            <h1 style="background: linear-gradient(to bottom, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 40px;">
+                "We Speak History.<br>We Stand with Dignity.<br>We Rise as ONE VOICE."
+            </h1>
+            <h2 style="font-weight: 400; color: #fff;">យើងរៈឡើងក្នុងសំឡេងតែមួយ</h2>
+            <div style="margin-top: 50px; opacity: 0.4;">
+                <p class="english-txt">PHNOM PENH — 2026</p>
             </div>
-            <p class="khmer" style="margin-top: 30px; text-align: center; font-style: italic; opacity: 0.8;">
-                "ទីតាំងទាំងនេះជានិមិត្តសញ្ញានៃអធិបតេយ្យភាព និងព្រលឹងជាតិខ្មែរ។"
-            </p>
-        </section>
+        </div>
+    </div>
 
-        <!-- SLIDE 7: SCHEDULE -->
-        <section class="slide">
-            <p class="english">Production Timeline</p>
-            <h2 class="khmer">កាលវិភាគផលិតកម្ម (ខែមីនា)</h2>
-            <div class="timeline animate-up">
-                <div class="timeline-item">
-                    <div class="timeline-dot">7</div>
-                    <p class="khmer" style="font-size: 0.8rem;">ធ្វើដំណើរទៅកោះកេរ</p>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-dot">8</div>
-                    <p class="khmer" style="font-size: 0.8rem;">ថតពិធីបួងសួងសន្តិភាព</p>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-dot">9-10</div>
-                    <p class="khmer" style="font-size: 0.8rem;">ថតប្លង់ Cinematic នៅសៀមរាប</p>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-dot">11</div>
-                    <p class="khmer" style="font-size: 0.8rem;">ផលិតភាពយន្តគោល</p>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-dot">12</div>
-                    <p class="khmer" style="font-size: 0.8rem;">ត្រឡប់មកភ្នំពេញ</p>
-                </div>
-            </div>
-        </section>
+</div>
 
-        <!-- SLIDE 8: BUDGET -->
-        <section class="slide">
-            <p class="english">Financial Strategy</p>
-            <h2 class="khmer">ថវិកាដែលត្រូវការ - ដំណាក់កាលទី ១</h2>
-            <div class="grid grid-2 animate-up">
-                <table class="budget-table">
-                    <tr><td class="khmer label">Production Crew</td><td class="value">$5,800</td></tr>
-                    <tr><td class="khmer label">Post Production</td><td class="value">$1,000</td></tr>
-                    <tr><td class="khmer label">Equipment (1 Set)</td><td class="value">$3,000</td></tr>
-                    <tr><td class="khmer label">Content Creators (15)</td><td class="value">$1,500</td></tr>
-                    <tr><td class="khmer label">Transportation</td><td class="value">$2,700</td></tr>
-                </table>
-                <div class="content-box" style="display: flex; flex-direction: column; justify-content: center; align-items: center; border-left: none; border: 1px solid var(--gold);">
-                    <p class="english">Grand Total</p>
-                    <h2 style="font-size: 4rem; color: var(--gold);">$18,100</h2>
-                    <p class="khmer" style="opacity: 0.6;">ដុល្លារអាមេរិក</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- SLIDE 9: CLOSING -->
-        <section class="slide">
-            <div class="cover-content animate-up">
-                <p class="english" style="letter-spacing: 10px;">WE RISE WITH DIGNITY</p>
-                <h1 class="khmer" style="margin: 40px 0;">យើងរៈឡើងក្នុងសំឡេងតែមួយ</h1>
-                <div class="grid grid-3" style="max-width: 800px; margin: 0 auto; opacity: 0.6;">
-                    <div class="khmer">យើងមិនផ្សាយស្អប់ខ្ពើម</div>
-                    <div class="khmer">យើងផ្សាយប្រវត្តិសាស្ត្រពិត</div>
-                    <div class="khmer">យើងឈរដោយសេចក្តីថ្លៃថ្នូរ</div>
-                </div>
-                <div style="margin-top: 60px;">
-                    <img src="https://sophatchy.com/wp-content/uploads/2026/02/Logo-Onevoice-update-02.png" alt="One Voice Logo" style="height: 60px;">
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <script>
-        let currentSlide = 0;
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        let currentIdx = 0;
         const slides = document.querySelectorAll('.slide');
-        const dotsContainer = document.getElementById('progress-dots');
+        const navUI = document.getElementById('nav-ui');
+        const progLine = document.getElementById('progress-line');
+        const spotlight = document.getElementById('spotlight');
 
-        // Initialize Dots
+        // Init Dots
         slides.forEach((_, i) => {
             const dot = document.createElement('div');
-            dot.className = `dot ${i === 0 ? 'active' : ''}`;
+            dot.className = 'dot';
             dot.onclick = () => goToSlide(i);
-            dotsContainer.appendChild(dot);
+            navUI.appendChild(dot);
         });
 
-        const dots = document.querySelectorAll('.dot');
-
-        function updateSlides() {
-            slides.forEach((s, i) => {
-                s.classList.toggle('active', i === currentSlide);
-            });
-            dots.forEach((d, i) => {
-                d.classList.toggle('active', i === currentSlide);
-            });
+        function updateSlider() {
+            slides.forEach((s, i) => s.classList.toggle('active', i === currentIdx));
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((d, i) => d.classList.toggle('active', i === currentIdx));
+            
+            const progWidth = ((currentIdx + 1) / slides.length) * 100;
+            progLine.style.width = progWidth + '%';
         }
 
-        function nextSlide() {
-            if (currentSlide < slides.length - 1) {
-                currentSlide++;
-                updateSlides();
-            }
-        }
+        const goToSlide = (idx) => { currentIdx = idx; updateSlider(); };
+        const next = () => { if (currentIdx < slides.length - 1) { currentIdx++; updateSlider(); } };
+        const prev = () => { if (currentIdx > 0) { currentIdx--; updateSlider(); } };
 
-        function prevSlide() {
-            if (currentSlide > 0) {
-                currentSlide--;
-                updateSlides();
-            }
-        }
+        document.getElementById('next-zone').onclick = next;
+        document.getElementById('prev-zone').onclick = prev;
 
-        function goToSlide(index) {
-            currentSlide = index;
-            updateSlides();
-        }
+        document.onkeydown = (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') next();
+            if (e.key === 'ArrowLeft') prev();
+        };
 
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
-            if (e.key === 'ArrowLeft') prevSlide();
-        });
+        // Spotlight Move
+        document.onmousemove = (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 60;
+            const y = (e.clientY / window.innerHeight - 0.5) * 60;
+            spotlight.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+        };
 
-        // Touch swipe support (simple)
-        let touchstartX = 0;
-        let touchendX = 0;
-        
-        document.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; });
-        document.addEventListener('touchend', e => { 
-            touchendX = e.changedTouches[0].screenX;
-            if (touchstartX - touchendX > 50) nextSlide();
-            if (touchendX - touchstartX > 50) prevSlide();
-        });
-    </script>
+        updateSlider();
+    });
+</script>
+
 </body>
 </html>
