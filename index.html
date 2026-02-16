@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ONE VOICE - Film & Production Master Presentation</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --indigo-deep: #0a0e1a;
+            --indigo-accent: #161e31;
+            --gold: #F4B622;
+            --gold-muted: #b3861a;
+            --text-main: #ffffff;
+            --text-muted: #a0aec0;
+            --stone-texture: rgba(255, 255, 255, 0.03);
+            --ease-cinematic: cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Kantumruy Pro', 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--indigo-deep);
+            color: var(--text-main);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Ambient Background */
+        .bg-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                radial-gradient(circle at 50% -20%, rgba(244, 182, 34, 0.08), transparent 70%),
+                radial-gradient(circle at 0% 100%, rgba(22, 30, 49, 1), transparent 50%);
+            z-index: -1;
+        }
+
+        .stone-pattern {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0.05;
+            background-image: url('https://www.transparenttextures.com/patterns/dark-matter.png');
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Navigation UI */
+        .nav-interface {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            z-index: 1000;
+            background: rgba(10, 14, 26, 0.8);
+            padding: 10px 30px;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .nav-btn:hover { color: var(--gold); transform: scale(1.2); }
+
+        .progress-dots { display: flex; gap: 8px; }
+        .dot { 
+            width: 6px; height: 6px; border-radius: 50%; 
+            background: rgba(255,255,255,0.2); transition: 0.4s; 
+        }
+        .dot.active { background: var(--gold); width: 20px; border-radius: 10px; }
+
+        /* Slide Core */
+        .presentation { width: 100%; height: 100%; position: relative; }
+
+        .slide {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            justify-content: center;
+            padding: 60px 10%;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px);
+            transition: all 0.8s var(--ease-cinematic);
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        /* Typography */
+        .khmer { font-family: 'Kantumruy Pro', sans-serif; }
+        .english { font-family: 'Plus Jakarta Sans', sans-serif; text-transform: uppercase; letter-spacing: 2px; font-weight: 300; font-size: 0.85rem; color: var(--gold); }
+
+        h1 { font-size: clamp(2.5rem, 5vw, 4.5rem); line-height: 1.2; margin-bottom: 10px; font-weight: 700; }
+        .subtitle { font-size: 1.5rem; color: var(--gold); margin-bottom: 30px; }
+        
+        .content-box {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid var(--gold);
+            padding: 30px;
+            margin-top: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .grid { display: grid; gap: 30px; }
+        .grid-2 { grid-template-columns: 1fr 1fr; }
+        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+
+        /* Custom Elements */
+        .stat-card {
+            background: var(--indigo-accent);
+            padding: 25px;
+            border-radius: 15px;
+            border-bottom: 2px solid transparent;
+            transition: 0.3s;
+        }
+        .stat-card:hover { border-color: var(--gold); background: rgba(244, 182, 34, 0.05); }
+
+        .budget-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .budget-table td { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .budget-table .label { color: var(--text-muted); }
+        .budget-table .value { text-align: right; font-weight: 700; color: var(--gold); }
+
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-top: 50px;
+        }
+        .timeline::before {
+            content: ''; position: absolute; top: 15px; left: 0; width: 100%; height: 1px;
+            background: rgba(255,255,255,0.1); z-index: 0;
+        }
+        .timeline-item { position: relative; z-index: 1; text-align: center; width: 15%; }
+        .timeline-dot { 
+            width: 30px; height: 30px; background: var(--indigo-deep); 
+            border: 2px solid var(--gold); border-radius: 50%; margin: 0 auto 15px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.7rem;
+        }
+
+        /* Cover Slide Special */
+        .cover-content { text-align: center; }
+        .temple-silhouette {
+            height: 200px;
+            margin-bottom: 40px;
+            opacity: 0.3;
+            background: url('https://www.transparenttextures.com/patterns/black-paper.png'); /* Mock silhouette space */
+            mask-image: linear-gradient(to top, black, transparent);
+        }
+
+        /* Animations */
+        .slide.active .animate-up { animation: slideUp 1s var(--ease-cinematic) forwards; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 900px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .slide { padding: 40px 5%; }
+            .nav-interface { width: 90%; justify-content: space-between; bottom: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-overlay"></div>
+    <div class="stone-pattern"></div>
+
+    <div class="nav-interface">
+        <button class="nav-btn" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i></button>
+        <div class="progress-dots" id="progress-dots"></div>
+        <button class="nav-btn" onclick="nextSlide()"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+
+    <main class="presentation" id="presentation">
+        
+        <!-- SLIDE 1: COVER -->
+        <section class="slide active">
+            <div class="cover-content animate-up">
+                <div style="margin-bottom: 20px;">
+                    <img src="https://sophatchy.com/wp-content/uploads/2026/02/Logo-Onevoice-update-02.png" alt="One Voice Logo" style="height: 120px;">
+                </div>
+                <p class="english">Season I – Film & Production Master Presentation</p>
+                <h1 class="khmer">ONE VOICE – សំឡេងខ្មែរតែមួយ</h1>
+                <p class="subtitle khmer">ការពារទឹកដីសក្ការៈ រៈឡើងក្នុងសំឡេងតែមួយ</p>
+                <div style="margin-top: 40px; opacity: 0.6;">
+                    <p class="khmer">សិល្បៈ សន្តិភាព និងសេចក្តីថ្លៃថ្នូររបស់កម្ពុជា</p>
+                    <p class="english">Art as the Voice of Peace and National Dignity</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 2: HISTORY -->
+        <section class="slide">
+            <p class="english">01. Historical Background</p>
+            <h2 class="khmer" style="font-size: 2.5rem;">ប្រវត្តិនៃការចាប់ផ្ដើម</h2>
+            <div class="grid grid-2 animate-up">
+                <div class="content-box">
+                    <p class="khmer">ONE VOICE ចាប់ផ្ដើមពីចក្ខុវិស័យសិល្បៈ <strong>“Garuda (Krud)”</strong> ឆ្នាំ 1997។</p>
+                    <p class="khmer" style="margin-top: 15px;">ឆ្នាំ 2025 បានផលិតភាពយន្តខ្លី “Defending Our Sacred Land” ក្នុងបរិបទភាពតានតឹងនយោបាយ និងការគំរាមកំហែងសង្គ្រាម។</p>
+                </div>
+                <div class="content-box" style="border-color: rgba(255,255,255,0.2);">
+                    <p class="english" style="color: var(--text-muted); text-transform: none; font-size: 1rem;">
+                        From an artistic vision, it evolved into a national cultural movement uniting artists, filmmakers, and religious communities.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 3: WHY ONE VOICE -->
+        <section class="slide">
+            <p class="english">02. Purpose & Context</p>
+            <h2 class="khmer" style="font-size: 2.5rem;">ហេតុអ្វីបានជាមាន ONE VOICE?</h2>
+            <div class="grid grid-3 animate-up" style="margin-top: 30px;">
+                <div class="stat-card">
+                    <i class="fa-solid fa-person-walking-arrow-right" style="color: var(--gold); font-size: 2rem; margin-bottom: 15px;"></i>
+                    <h3 class="khmer">ទុក្ខវេទនា</h3>
+                    <p class="khmer" style="font-size: 0.9rem; opacity: 0.7;">ប្រជាជនស្លូតត្រង់ត្រូវរត់ភៀសខ្លួន និងគ្រួសារត្រូវបានបំបែកពីគ្នា។</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fa-solid fa-gopuram" style="color: var(--gold); font-size: 2rem; margin-bottom: 15px;"></i>
+                    <h3 class="khmer">បេតិកភណ្ឌ</h3>
+                    <p class="khmer" style="font-size: 0.9rem; opacity: 0.7;">ប្រាសាទ និងកេរ្តិ៍ដំណែលត្រូវបានបំផ្លាញដោយសារជម្លោះ។</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fa-solid fa-palette" style="color: var(--gold); font-size: 2rem; margin-bottom: 15px;"></i>
+                    <h3 class="khmer">ការឆ្លើយតប</h3>
+                    <p class="khmer" style="font-size: 0.9rem; opacity: 0.7;">យើងមិនឆ្លើយតបដោយអំពើហិង្សា ប៉ុន្តែយើងឆ្លើយតបដោយសិល្បៈ។</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 4: VISION & MISSION -->
+        <section class="slide">
+            <div class="grid grid-2 animate-up">
+                <div>
+                    <p class="english">Vision</p>
+                    <h2 class="khmer">ចក្ខុវិស័យ</h2>
+                    <p class="khmer" style="font-size: 1.2rem; line-height: 1.8;">
+                        សិល្បៈគឺជាភាសាសកល និងជាកម្លាំងសីលធម៌។ យើងជឿថាទឹកដីសក្ការៈរបស់កម្ពុជា គឺជាទឹកដីសន្តិភាព មិនមែនសង្គ្រាម។
+                    </p>
+                </div>
+                <div class="content-box">
+                    <p class="english">Mission</p>
+                    <ul class="khmer" style="list-style: none; line-height: 2;">
+                        <li><i class="fa-solid fa-check" style="color: var(--gold); margin-right: 10px;"></i> ផ្សព្វផ្សាយប្រវត្តិសាស្ត្រពិត</li>
+                        <li><i class="fa-solid fa-check" style="color: var(--gold); margin-right: 10px;"></i> លើកស្ទួយវប្បធម៌ខ្មែរ</li>
+                        <li><i class="fa-solid fa-check" style="color: var(--gold); margin-right: 10px;"></i> បង្កើតសំឡេងជាតិដ៏រួបរួម</li>
+                        <li><i class="fa-solid fa-check" style="color: var(--gold); margin-right: 10px;"></i> ផ្សព្វផ្សាយសន្តិភាពលើឆាកអន្តរជាតិ</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 5: PRODUCTION CONCEPT -->
+        <section class="slide">
+            <p class="english">03. Phase I Concept</p>
+            <h2 class="khmer">ការផលិតភាពយន្តរបាំសម័យថ្មី</h2>
+            <div class="grid grid-2 animate-up" style="margin-top: 30px;">
+                <div class="stat-card">
+                    <h4 class="english">Key Features</h4>
+                    <div class="khmer" style="margin-top: 15px;">
+                        <p>• រយៈពេល ២០ នាទី</p>
+                        <p>• ស្ដារពិធីសន្តិភាពដែលបាត់បង់ ២០០ ឆ្នាំ</p>
+                        <p>• ចូលរួមដោយ ៣០ សិល្បករបុរាណ</p>
+                        <p>• រួមមាន ព្រះសង្ឃ និងព្រះបូជាហិណ្ឌូ</p>
+                    </div>
+                </div>
+                <div style="background: url('https://sophatchy.com/wp-content/uploads/2026/02/Logo-Onevoice-update-03.png') no-repeat center; background-size: contain; opacity: 0.2;"></div>
+            </div>
+        </section>
+
+        <!-- SLIDE 6: LOCATIONS -->
+        <section class="slide">
+            <p class="english">Locations</p>
+            <h2 class="khmer">ទីតាំងថតដ៏សក្ការៈ</h2>
+            <div class="grid grid-2 animate-up" style="margin-top: 30px;">
+                <div class="content-box" style="border-color: var(--gold);">
+                    <h3 class="khmer">ខេត្តព្រះវិហារ</h3>
+                    <p class="khmer">ប្រាសាទកោះកេរ (Koh Ker Temple)</p>
+                </div>
+                <div class="content-box" style="border-color: var(--gold);">
+                    <h3 class="khmer">ខេត្តសៀមរាប</h3>
+                    <p class="khmer">ប្រាសាទចោម (Chom Temple)</p>
+                </div>
+            </div>
+            <p class="khmer" style="margin-top: 30px; text-align: center; font-style: italic; opacity: 0.8;">
+                "ទីតាំងទាំងនេះជានិមិត្តសញ្ញានៃអធិបតេយ្យភាព និងព្រលឹងជាតិខ្មែរ។"
+            </p>
+        </section>
+
+        <!-- SLIDE 7: SCHEDULE -->
+        <section class="slide">
+            <p class="english">Production Timeline</p>
+            <h2 class="khmer">កាលវិភាគផលិតកម្ម (ខែមីនា)</h2>
+            <div class="timeline animate-up">
+                <div class="timeline-item">
+                    <div class="timeline-dot">7</div>
+                    <p class="khmer" style="font-size: 0.8rem;">ធ្វើដំណើរទៅកោះកេរ</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot">8</div>
+                    <p class="khmer" style="font-size: 0.8rem;">ថតពិធីបួងសួងសន្តិភាព</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot">9-10</div>
+                    <p class="khmer" style="font-size: 0.8rem;">ថតប្លង់ Cinematic នៅសៀមរាប</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot">11</div>
+                    <p class="khmer" style="font-size: 0.8rem;">ផលិតភាពយន្តគោល</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot">12</div>
+                    <p class="khmer" style="font-size: 0.8rem;">ត្រឡប់មកភ្នំពេញ</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 8: BUDGET -->
+        <section class="slide">
+            <p class="english">Financial Strategy</p>
+            <h2 class="khmer">ថវិកាដែលត្រូវការ - ដំណាក់កាលទី ១</h2>
+            <div class="grid grid-2 animate-up">
+                <table class="budget-table">
+                    <tr><td class="khmer label">Production Crew</td><td class="value">$5,800</td></tr>
+                    <tr><td class="khmer label">Post Production</td><td class="value">$1,000</td></tr>
+                    <tr><td class="khmer label">Equipment (1 Set)</td><td class="value">$3,000</td></tr>
+                    <tr><td class="khmer label">Content Creators (15)</td><td class="value">$1,500</td></tr>
+                    <tr><td class="khmer label">Transportation</td><td class="value">$2,700</td></tr>
+                </table>
+                <div class="content-box" style="display: flex; flex-direction: column; justify-content: center; align-items: center; border-left: none; border: 1px solid var(--gold);">
+                    <p class="english">Grand Total</p>
+                    <h2 style="font-size: 4rem; color: var(--gold);">$18,100</h2>
+                    <p class="khmer" style="opacity: 0.6;">ដុល្លារអាមេរិក</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 9: CLOSING -->
+        <section class="slide">
+            <div class="cover-content animate-up">
+                <p class="english" style="letter-spacing: 10px;">WE RISE WITH DIGNITY</p>
+                <h1 class="khmer" style="margin: 40px 0;">យើងរៈឡើងក្នុងសំឡេងតែមួយ</h1>
+                <div class="grid grid-3" style="max-width: 800px; margin: 0 auto; opacity: 0.6;">
+                    <div class="khmer">យើងមិនផ្សាយស្អប់ខ្ពើម</div>
+                    <div class="khmer">យើងផ្សាយប្រវត្តិសាស្ត្រពិត</div>
+                    <div class="khmer">យើងឈរដោយសេចក្តីថ្លៃថ្នូរ</div>
+                </div>
+                <div style="margin-top: 60px;">
+                    <img src="https://sophatchy.com/wp-content/uploads/2026/02/Logo-Onevoice-update-02.png" alt="One Voice Logo" style="height: 60px;">
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dotsContainer = document.getElementById('progress-dots');
+
+        // Initialize Dots
+        slides.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.className = `dot ${i === 0 ? 'active' : ''}`;
+            dot.onclick = () => goToSlide(i);
+            dotsContainer.appendChild(dot);
+        });
+
+        const dots = document.querySelectorAll('.dot');
+
+        function updateSlides() {
+            slides.forEach((s, i) => {
+                s.classList.toggle('active', i === currentSlide);
+            });
+            dots.forEach((d, i) => {
+                d.classList.toggle('active', i === currentSlide);
+            });
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                updateSlides();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlides();
+            }
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSlides();
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        // Touch swipe support (simple)
+        let touchstartX = 0;
+        let touchendX = 0;
+        
+        document.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; });
+        document.addEventListener('touchend', e => { 
+            touchendX = e.changedTouches[0].screenX;
+            if (touchstartX - touchendX > 50) nextSlide();
+            if (touchendX - touchstartX > 50) prevSlide();
+        });
+    </script>
+</body>
+</html>
